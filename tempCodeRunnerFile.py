@@ -1,0 +1,1 @@
+python {yolo_script_path} --image {image_path} --config {config_file} --weights {weights_file} --classes {classes_file}
