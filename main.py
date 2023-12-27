@@ -15,7 +15,7 @@ weights_file = "yolov3.weights"
 classes_file = "yolov3.txt"
 
 # Directory containing the images
-images_directory = r"F:\object-detection-opencv-master"
+images_directory = r"F:\object-detection-opencv-master\Frames"
 output_directory = r"F:\object-detection-opencv-master"
 
 def count_files_in_folder(folder_path):
@@ -47,18 +47,8 @@ for i in range(file_count):
 
             # Construct the command to run YOLO on the current image
             command = f"python {yolo_script_path} --image {image_path} --config {config_file} --weights {weights_file} --classes {classes_file}"
-
             # Run the YOLO script using subprocess
             subprocess.run(command, shell=True)
-            with open('output.txt', 'r') as file:
-                
-                lines = file.readlines()
-                bounding_boxes = [ast.literal_eval(line) for line in lines]
-                frame_bounding_boxes[i] = bounding_boxes
-                print(bounding_boxes)
-                image_data_list.append({'image_id': i, 'bounding_boxes': bounding_boxes})
-            with open('output_all.txt', 'a') as file:
-                file.write(f"{i}: {bounding_boxes}\n")
         else:
             print('Not Iframe')
     
@@ -66,6 +56,21 @@ for i in range(file_count):
 #scipy.io.savemat(mat_file_path, {'bounding_boxes': list(frame_bounding_boxes.values())})
 #print("All Bounding Boxes:")
 #print(image_data_list)
+
+'''New part'''
+mat_file_path = 'output_all.mat'
+excel_file_path = 'df.xlsx'
+if os.path.exists(mat_file_path):
+    existing_data = scipy.io.loadmat(mat_file_path)
+scipy.io.savemat(mat_file_path, {'bounding_boxes': list(frame_bounding_boxes.values())})
+
+if os.path.exists(excel_file_path):
+    df_existing = pd.read_excel(excel_file_path)
+df = pd.DataFrame(image_data_list)
+df_combined = df_existing.append(df, ignore_index=True)
+df_combined.to_excel(excel_file_path, index=False)
+
+
 
 
 

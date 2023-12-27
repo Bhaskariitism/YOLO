@@ -106,23 +106,18 @@ for i in indices:
     h = box[3]
     draw_prediction(image, class_ids[i], confidences[i], round(x), round(y), round(x+w), round(y+h))
     All_boxes.append(box)
-    
-    
-items = [item for pair in zip(Labels, All_boxes) for item in pair]
-df = pd.DataFrame(items).T
 
 
-with pd.ExcelWriter('output.xlsx') as writer:  
-    df.to_excel(writer, sheet_name='Sheet_name_1')
-    
-mat_file_path = 'New.mat'
-scipy.io.savemat(mat_file_path, {'bounding_boxes': list(items.values())})
-#print("All Bounding Boxes:")
-#print(image_data_list)
 
-#writer = pd.ExcelWriter('Items.xlsx', engine = 'xlsxwriter')
-#df.to_excel(writer, sheet_name='items')
-print(df)
+items = [(label, values) for label, values in zip(Labels, All_boxes)]
+data_dict = {'items': items}
+
+# Save the dictionary in a .mat file
+file_name = 'items_data.mat'
+scipy.io.savemat(file_name, data_dict,appendmat=True)
+
+
+print(data_dict)
 cv2.imshow("object detection", image)
 cv2.waitKey()
     
